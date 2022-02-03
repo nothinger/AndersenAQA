@@ -1,3 +1,5 @@
+package restassured;
+
 import io.restassured.response.Response;
 import org.json.simple.JSONObject;
 import org.testng.Assert;
