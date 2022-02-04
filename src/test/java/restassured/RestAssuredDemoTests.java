@@ -1,14 +1,22 @@
 package restassured;
 
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.apache.commons.io.IOUtils;
+import org.hamcrest.Matchers;
 import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class RestAssuredDemoTests {
@@ -115,6 +123,38 @@ public class RestAssuredDemoTests {
                 .delete("/api/users/2")
                 .then()
                 .statusCode(204)
+                .log()
+                .all();
+    }
+
+    @Test
+    public void testDemoGetRequestExampleJsonValidation () {
+        baseURI = "https://reqres.in/api";
+        given().get("users?page=2")
+                .then()
+                .statusCode(200)
+                .assertThat()
+                .body(matchesJsonSchemaInClasspath("JsonScheme.json"))
+                .log()
+                .all();
+    }
+
+    @Test
+    public void testDemoGetRequestExampleXmlValidation () throws IOException {
+        baseURI = "http://www.dneonline.com/";
+        File file = new File("./src/main/resources/schemesfortests/RestAssuredXml.xml");
+        FileInputStream fileInputStream = new FileInputStream(file);
+        String requestBody = IOUtils.toString(fileInputStream,"UTF-8");
+        given()
+                .contentType("text/xml")
+                .accept(ContentType.XML)
+                .body(requestBody)
+                .when()
+                .post("/calculator.asmx")
+                .then()
+                .statusCode(200)
+                .and()
+                .body("//*:AddResult.text()", equalTo("5"))
                 .log()
                 .all();
     }
