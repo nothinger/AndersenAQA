@@ -204,4 +204,24 @@ public class RestAssuredDemoTests extends DataProvidersForRestAssuredTests {
                 .log()
                 .all();
     }
+
+    @Test (dataProvider = "dataForPostExel")
+    public void testDemoParameterizationFromExel(String name, String job) {
+        baseURI = "https://reqres.in/api";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        JSONObject request = new JSONObject(map);
+        request.put("name", name);
+        request.put("job", job);
+
+        given()
+                .header("content-type", "application/json")
+                .body(request.toJSONString())
+                .when()
+                .post("api/users")
+                .then()
+                .statusCode(201)
+                .log()
+                .all();
+    }
 }

@@ -5,6 +5,16 @@
     <parameter name="job" value="Designer"/>
     <test verbose="2" preserve-order="true" name="C:/Users/Wazzup/IdeaProjects/AndersenAQA">
         <classes><class name="restassured.RestAssuredDemoTests"><methods>
+            <include name="testDemo"/>
+            <include name="testDemoExtras"/>
+            <include name="testDemoGetRequestExample"/>
+            <include name="testDemoPostRequestExample"/>
+            <include name="testDemoPutRequestExample"/>
+            <include name="testDemoPatchRequestExample"/>
+            <include name="testDemoDeleteRequestExample"/>
+            <include name="testDemoGetRequestExampleJsonValidation"/>
+            <include name="testDemoGetRequestExampleXmlValidation"/>
+            <include name="testDemoParameterization"/>
             <include name="testDemoParameters"/>
         </methods>
         </class>
