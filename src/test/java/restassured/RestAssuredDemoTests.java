@@ -1,16 +1,18 @@
 package restassured;
 
+import datafortest.DataProvidersForRestAssuredTests;
 import io.restassured.http.ContentType;
+import io.restassured.matcher.RestAssuredMatchers;
 import io.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matchers;
 import org.json.simple.JSONObject;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,10 +21,10 @@ import static io.restassured.RestAssured.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class RestAssuredDemoTests {
+public class RestAssuredDemoTests extends DataProvidersForRestAssuredTests {
 
     @Test
-    public void testDemo () {
+    public void testDemo() {
         Response response = get("https://reqres.in/api/users?page=2");
         System.out.println(response.getBody().asString());
         System.out.println(response.getTime());
@@ -33,7 +35,7 @@ public class RestAssuredDemoTests {
     }
 
     @Test
-    public void testDemoExtras () {
+    public void testDemoExtras() {
         baseURI = "https://reqres.in/api";
         given().get("/users?page=2")
                 .then()
@@ -44,7 +46,7 @@ public class RestAssuredDemoTests {
     }
 
     @Test
-    public void testDemoGetRequestExample () {
+    public void testDemoGetRequestExample() {
         baseURI = "https://reqres.in/api";
         given().get("users/2")
                 .then()
@@ -55,16 +57,16 @@ public class RestAssuredDemoTests {
     }
 
     @Test
-    public void testDemoPostRequestExample () {
+    public void testDemoPostRequestExample() {
         baseURI = "https://reqres.in/api";
 
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
         JSONObject request = new JSONObject(map);
         request.put("name", "Andrew");
-        request.put("job","AQA");
+        request.put("job", "AQA");
 
         given()
-                .header("content-type","application/json")
+                .header("content-type", "application/json")
                 .body(request.toJSONString())
                 .when()
                 .post("api/users")
@@ -75,16 +77,16 @@ public class RestAssuredDemoTests {
     }
 
     @Test
-    public void testDemoPutRequestExample () {
+    public void testDemoPutRequestExample() {
         baseURI = "https://reqres.in/api";
 
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
         JSONObject request = new JSONObject(map);
         request.put("name", "Andrew");
-        request.put("job","AQA");
+        request.put("job", "AQA");
 
         given()
-                .header("content-type","application/json")
+                .header("content-type", "application/json")
                 .body(request.toJSONString())
                 .when()
                 .put("/api/users/2")
@@ -95,16 +97,16 @@ public class RestAssuredDemoTests {
     }
 
     @Test
-    public void testDemoPatchRequestExample () {
+    public void testDemoPatchRequestExample() {
         baseURI = "https://reqres.in/api";
 
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
         JSONObject request = new JSONObject(map);
         request.put("name", "Andrew");
-        request.put("job","AQA");
+        request.put("job", "AQA");
 
         given()
-                .header("content-type","application/json")
+                .header("content-type", "application/json")
                 .body(request.toJSONString())
                 .when()
                 .patch("/api/users/2")
@@ -115,7 +117,7 @@ public class RestAssuredDemoTests {
     }
 
     @Test
-    public void testDemoDeleteRequestExample () {
+    public void testDemoDeleteRequestExample() {
         baseURI = "https://reqres.in/api";
 
         given()
@@ -128,7 +130,7 @@ public class RestAssuredDemoTests {
     }
 
     @Test
-    public void testDemoGetRequestExampleJsonValidation () {
+    public void testDemoGetRequestExampleJsonValidation() {
         baseURI = "https://reqres.in/api";
         given().get("users?page=2")
                 .then()
@@ -140,11 +142,11 @@ public class RestAssuredDemoTests {
     }
 
     @Test
-    public void testDemoGetRequestExampleXmlValidation () throws IOException {
+    public void testDemoGetRequestExampleXmlValidation() throws IOException {
         baseURI = "http://www.dneonline.com/";
         File file = new File("./src/main/resources/schemesfortests/RestAssuredXml.xml");
         FileInputStream fileInputStream = new FileInputStream(file);
-        String requestBody = IOUtils.toString(fileInputStream,"UTF-8");
+        String requestBody = IOUtils.toString(fileInputStream, "UTF-8");
         given()
                 .contentType("text/xml")
                 .accept(ContentType.XML)
@@ -155,6 +157,50 @@ public class RestAssuredDemoTests {
                 .statusCode(200)
                 .and()
                 .body("//*:AddResult.text()", equalTo("5"))
+                .and()
+                .assertThat()
+                .body(RestAssuredMatchers.matchesXsdInClasspath("XmlScheme.xsd"))
+                .log()
+                .all();
+    }
+
+    @Test (dataProvider = "dataForPost")
+    public void testDemoParameterization(String name, String job) {
+        baseURI = "https://reqres.in/api";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        JSONObject request = new JSONObject(map);
+        request.put("name", name);
+        request.put("job", job);
+
+        given()
+                .header("content-type", "application/json")
+                .body(request.toJSONString())
+                .when()
+                .post("api/users")
+                .then()
+                .statusCode(201)
+                .log()
+                .all();
+    }
+
+    @Parameters({"name","job"})
+    @Test
+    public void testDemoParameters(String name, String job) {
+        baseURI = "https://reqres.in/api";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        JSONObject request = new JSONObject(map);
+        request.put("name", name);
+        request.put("job", job);
+
+        given()
+                .header("content-type", "application/json")
+                .body(request.toJSONString())
+                .when()
+                .post("api/users")
+                .then()
+                .statusCode(201)
                 .log()
                 .all();
     }
