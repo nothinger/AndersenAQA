@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="All Test Suite">
-    <parameter name="name" value="Anzelika"/>
-    <parameter name="job" value="Designer"/>
-    <test verbose="2" preserve-order="true" name="C:/Users/Wazzup/IdeaProjects/AndersenAQA">
-        <classes><class name="restassured.RestAssuredDemoTests"><methods>
-            <include name="testDemo"/>
-            <include name="testDemoExtras"/>
-            <include name="testDemoGetRequestExample"/>
-            <include name="testDemoPostRequestExample"/>
-            <include name="testDemoPutRequestExample"/>
-            <include name="testDemoPatchRequestExample"/>
-            <include name="testDemoDeleteRequestExample"/>
-            <include name="testDemoGetRequestExampleJsonValidation"/>
-            <include name="testDemoGetRequestExampleXmlValidation"/>
-            <include name="testDemoParameterization"/>
-            <include name="testDemoParameters"/>
-        </methods>
-        </class>
+    <test verbose="2" preserve-order="true" name="TestNgGroupingTests.java">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <exclude name="regression"></exclude>
+            </run>
+        </groups>
+        <classes>
+            <class name="selenium.TestNgGroupingTests"></class>
         </classes>
     </test>
 </suite>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
